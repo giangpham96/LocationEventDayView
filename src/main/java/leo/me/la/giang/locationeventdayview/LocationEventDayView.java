@@ -6,15 +6,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.List;
  * Created by giang on 2/16/18.
  */
 
-public class LocationEventDayView extends RelativeLayout {
+public class LocationEventDayView extends FrameLayout {
 
     private LinearLayout headerView;
     private LinearLayout recyclers;
@@ -32,24 +31,31 @@ public class LocationEventDayView extends RelativeLayout {
     private DateSchedule dateSchedule;
     private long slotLength = 30 * 60 * 1000;
 
+    public LocationEventDayView(Context context, DateSchedule dateSchedule, long slotLength) {
+        super(context);
+        this.dateSchedule = dateSchedule;
+        this.slotLength = slotLength;
+        init(context);
+    }
+
     public LocationEventDayView(Context context, DateSchedule dateSchedule) {
         super(context);
         this.dateSchedule = dateSchedule;
         init(context);
     }
 
-    public LocationEventDayView(Context context, @Nullable AttributeSet attrs) {
+    private LocationEventDayView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public LocationEventDayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    private LocationEventDayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public LocationEventDayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    private LocationEventDayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
     }
@@ -61,13 +67,10 @@ public class LocationEventDayView extends RelativeLayout {
         headerView = rootView.findViewById(R.id.header);
         recyclers = rootView.findViewById(R.id.rcv);
 
-        setupHeader(context);
-        setupRecyclerView(context);
-    }
+        recyclerViews = new ArrayList<>();
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setupHeader(context);
+        setupRecyclerViews(context);
     }
 
     private void setupHeader(Context context) {
@@ -80,36 +83,8 @@ public class LocationEventDayView extends RelativeLayout {
         }
     }
 
-    private void putTextViewInHeader(Context context, String label, int color, float weight) {
-        TextView textView = new TextView(context);
-        textView.setText(label);
-        textView.setTextColor(Color.WHITE);
-        textView.setBackgroundColor(color);
-        textView.setTextSize(14f);
-        textView.setGravity(Gravity.CENTER);
-        headerView.addView(textView);
-        textView.setLayoutParams(getLayoutParams(weight));
-    }
-
-
-    private void putTextViewInHeader(Context context, String label, Drawable drawable, float weight) {
-        TextView textView = new TextView(context);
-        textView.setText(label);
-        textView.setTextColor(Color.WHITE);
-        final int sdk = android.os.Build.VERSION.SDK_INT;
-        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            textView.setBackgroundDrawable(drawable);
-        } else {
-            textView.setBackground(drawable);
-        }
-        textView.setTextSize(14f);
-        textView.setGravity(Gravity.CENTER);
-        headerView.addView(textView);
-        textView.setLayoutParams(getLayoutParams(weight));
-    }
-
-    private void setupRecyclerView(Context context) {
-        recyclerViews = new ArrayList<>();
+    private void setupRecyclerViews(Context context) {
+        recyclerViews.clear();
         List<ScheduleItem> timeIndicatorItems = new ArrayList<>();
         long numberOfSlots = (long) Math.ceil((dateSchedule.getEndTime()
                 - dateSchedule.getStartTime()) / (float) slotLength);
@@ -133,6 +108,34 @@ public class LocationEventDayView extends RelativeLayout {
                             dateSchedule.getEndTime()),
                     1f);
         }
+    }
+
+
+    private void putTextViewInHeader(Context context, String label, int color, float weight) {
+        TextView textView = new TextView(context);
+        textView.setText(label);
+        textView.setTextColor(Color.WHITE);
+        textView.setBackgroundColor(color);
+        textView.setTextSize(14f);
+        textView.setGravity(Gravity.CENTER);
+        headerView.addView(textView);
+        textView.setLayoutParams(getVerticalLayoutParamsWithWeight(weight));
+    }
+
+    private void putTextViewInHeader(Context context, String label, Drawable drawable, float weight) {
+        TextView textView = new TextView(context);
+        textView.setText(label);
+        textView.setTextColor(Color.WHITE);
+        final int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            textView.setBackgroundDrawable(drawable);
+        } else {
+            textView.setBackground(drawable);
+        }
+        textView.setTextSize(14f);
+        textView.setGravity(Gravity.CENTER);
+        headerView.addView(textView);
+        textView.setLayoutParams(getVerticalLayoutParamsWithWeight(weight));
     }
 
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
@@ -164,12 +167,12 @@ public class LocationEventDayView extends RelativeLayout {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         recyclers.addView(recyclerView);
-        recyclerView.setLayoutParams(getLayoutParams(weight));
+        recyclerView.setLayoutParams(getVerticalLayoutParamsWithWeight(weight));
         recyclerViews.add(recyclerView);
         recyclerView.addOnScrollListener(scrollListener);
     }
 
-    private LinearLayout.LayoutParams getLayoutParams(float weight) {
+    private LinearLayout.LayoutParams getVerticalLayoutParamsWithWeight(float weight) {
         return new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 0, weight);
@@ -181,6 +184,10 @@ public class LocationEventDayView extends RelativeLayout {
 
     public void setDateSchedule(DateSchedule dateSchedule) {
         this.dateSchedule = dateSchedule;
+        headerView.removeAllViews();
+        recyclers.removeAllViews();
+        setupHeader(getContext());
+        setupRecyclerViews(getContext());
     }
 
     public long getSlotLength() {
@@ -189,5 +196,7 @@ public class LocationEventDayView extends RelativeLayout {
 
     public void setSlotLength(long slotLength) {
         this.slotLength = slotLength;
+        recyclers.removeAllViews();
+        setupRecyclerViews(getContext());
     }
 }
