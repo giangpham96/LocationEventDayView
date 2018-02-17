@@ -1,0 +1,194 @@
+package leo.me.la.giang.locationeventdayview;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by giang on 2/16/18.
+ */
+
+public class LocationEventDayView extends RelativeLayout {
+
+    private View rootView;
+    private LinearLayout headerView;
+    private LinearLayout recyclers;
+    private List<RecyclerView> recyclerViews;
+    private DateSchedule dateSchedule;
+    private long slotLength = 30 * 60 * 1000;
+
+    public LocationEventDayView(Context context, DateSchedule dateSchedule) {
+        super(context);
+        this.dateSchedule = dateSchedule;
+        init(context);
+    }
+
+    public LocationEventDayView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public LocationEventDayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public LocationEventDayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context);
+    }
+
+    public void init(Context context) {
+        rootView = inflate(context,
+                R.layout.layout_location_event_day_view,
+                this);
+        headerView = rootView.findViewById(R.id.header);
+        recyclers = rootView.findViewById(R.id.rcv);
+
+        setupHeader(context);
+        setupRecyclerView(context);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private void setupHeader(Context context) {
+        putTextViewInHeader(context, "", Color.WHITE, 0.3f);
+        for (LocationItem locationItem : dateSchedule.getLocationItems()) {
+            putTextViewInHeader(context,
+                    locationItem.getLocation(),
+                    getResources().getDrawable(R.drawable.bg_header),
+                    1f);
+        }
+    }
+
+    private void putTextViewInHeader(Context context, String label, int color, float weight) {
+        TextView textView = new TextView(context);
+        textView.setText(label);
+        textView.setTextColor(Color.WHITE);
+        textView.setBackgroundColor(color);
+        textView.setTextSize(14f);
+        textView.setGravity(Gravity.CENTER);
+        headerView.addView(textView);
+        textView.setLayoutParams(getLayoutParams(weight));
+    }
+
+
+    private void putTextViewInHeader(Context context, String label, Drawable drawable, float weight) {
+        TextView textView = new TextView(context);
+        textView.setText(label);
+        textView.setTextColor(Color.WHITE);
+        final int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            textView.setBackgroundDrawable(drawable);
+        } else {
+            textView.setBackground(drawable);
+        }
+        textView.setTextSize(14f);
+        textView.setGravity(Gravity.CENTER);
+        headerView.addView(textView);
+        textView.setLayoutParams(getLayoutParams(weight));
+    }
+
+    private void setupRecyclerView(Context context) {
+        recyclerViews = new ArrayList<>();
+        List<ScheduleItem> timeIndicatorItems = new ArrayList<>();
+        long numberOfSlots = (long) Math.ceil((dateSchedule.getEndTime()
+                - dateSchedule.getStartTime()) / (float) slotLength);
+        long startTime = dateSchedule.getStartTime();
+        for (int i = 0; i < numberOfSlots; i++) {
+            timeIndicatorItems.add(new TimeIndicatorItem(
+                    startTime,
+                    (i == numberOfSlots - 1)
+                            ? dateSchedule.getEndTime()
+                            : startTime + slotLength
+            ));
+            startTime += slotLength;
+        }
+
+        putRecyclerViewInRecycles(context, timeIndicatorItems, 0.3f);
+
+        for (LocationItem locationItem : dateSchedule.getLocationItems()) {
+            putRecyclerViewInRecycles(context,
+                    Utils.addUnreservedItem(locationItem.getItems(),
+                            dateSchedule.getStartTime(),
+                            dateSchedule.getEndTime()),
+                    1f);
+        }
+    }
+
+    private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            for (RecyclerView rcv :
+                    recyclerViews) {
+                if (rcv == recyclerView) {
+                    continue;
+                }
+                rcv.removeOnScrollListener(this);
+                rcv.scrollBy(dx, dy);
+                rcv.addOnScrollListener(this);
+            }
+        }
+    };
+
+    private void putRecyclerViewInRecycles(Context context, List<ScheduleItem> scheduleItems, float weight) {
+        RecyclerView recyclerView = new RecyclerView(context);
+        LocationEventDayViewAdapter adapter =
+                new LocationEventDayViewAdapter(scheduleItems, slotLength);
+        recyclerView.setAdapter(adapter);
+        LinearLayoutManager linearLayoutManager =
+                new LinearLayoutManager(context,
+                        LinearLayoutManager.HORIZONTAL,
+                        false);
+
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        recyclers.addView(recyclerView);
+        recyclerView.setLayoutParams(getLayoutParams(weight));
+        recyclerViews.add(recyclerView);
+        recyclerView.addOnScrollListener(scrollListener);
+    }
+
+    private LinearLayout.LayoutParams getLayoutParams(float weight) {
+        return new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0, weight);
+    }
+
+    public DateSchedule getDateSchedule() {
+        return dateSchedule;
+    }
+
+    public void setDateSchedule(DateSchedule dateSchedule) {
+        this.dateSchedule = dateSchedule;
+    }
+
+    public long getSlotLength() {
+        return slotLength;
+    }
+
+    public void setSlotLength(long slotLength) {
+        this.slotLength = slotLength;
+    }
+}
