@@ -8,30 +8,13 @@ import java.util.List;
  */
 
 public class LocationItem {
-    public enum HeaderType {
-        TIME_INDICATOR,
-        LOCATION
-    }
-    private HeaderType type;
+
     private String location;
     private List<EventItem> items;
 
     public LocationItem(String location, List<EventItem> items) {
         this.location = location;
         this.items = items;
-        type = HeaderType.LOCATION;
-    }
-
-    LocationItem(HeaderType type) {
-        this.type = type;
-    }
-
-    HeaderType getType() {
-        return type;
-    }
-
-    void setType(HeaderType type) {
-        this.type = type;
     }
 
     public String getLocation() {

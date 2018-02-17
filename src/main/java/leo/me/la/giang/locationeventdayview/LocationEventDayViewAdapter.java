@@ -24,7 +24,6 @@ class LocationEventDayViewAdapter extends RecyclerView.Adapter<LocationEventDayV
     private List<ScheduleItem> items;
     private long slotLength;
     private int slotWidth = (getScreenWidth() / 10 < 200) ? 200 : getScreenWidth() / 10;
-    private int slotHeight;
 
     LocationEventDayViewAdapter(List<ScheduleItem> items, long slotLength) {
         this.items = items;
@@ -68,7 +67,7 @@ class LocationEventDayViewAdapter extends RecyclerView.Adapter<LocationEventDayV
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ScheduleItem item = items.get(position);
-        holder.bind(item, slotWidth, slotHeight, slotLength);
+        holder.bind(item, slotWidth, slotLength);
     }
 
     @Override
@@ -79,6 +78,7 @@ class LocationEventDayViewAdapter extends RecyclerView.Adapter<LocationEventDayV
     private int getScreenWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvEvent, tvOrganizer, tvTime;
         ViewHolder(View itemView) {
@@ -88,7 +88,7 @@ class LocationEventDayViewAdapter extends RecyclerView.Adapter<LocationEventDayV
             tvTime = itemView.findViewById(R.id.tvTime);
         }
 
-        void bind(ScheduleItem item, int slotWidth, int slotHeight, long slotLength) {
+        void bind(ScheduleItem item, int slotWidth, long slotLength) {
 
             if (item instanceof TimeIndicatorItem) {
                 tvTime.setText(Utils.formatTime(item.getStartTime()));
@@ -99,10 +99,10 @@ class LocationEventDayViewAdapter extends RecyclerView.Adapter<LocationEventDayV
                 tvOrganizer.setText(((EventItem) item).getOrganizer());
             }
 
-            resize(item, slotWidth, slotHeight, slotLength);
+            resize(item, slotWidth, slotLength);
         }
 
-        private void resize(ScheduleItem item, int slotWidth, int slotHeight, long slotLength) {
+        private void resize(ScheduleItem item, int slotWidth, long slotLength) {
 
             int width = (int) ((float) slotWidth * (item.getEndTime() - item.getStartTime()) / slotLength);
 

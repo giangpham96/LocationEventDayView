@@ -10,8 +10,8 @@ import java.util.List;
  * Created by giang on 2/16/18.
  */
 
-public class Utils {
-    public static String formatTime(long time) {
+class Utils {
+    static String formatTime(long time) {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
         return simpleDateFormat.format(time);
     }

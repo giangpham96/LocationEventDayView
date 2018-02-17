@@ -26,7 +26,6 @@ import java.util.List;
 
 public class LocationEventDayView extends RelativeLayout {
 
-    private View rootView;
     private LinearLayout headerView;
     private LinearLayout recyclers;
     private List<RecyclerView> recyclerViews;
@@ -56,7 +55,7 @@ public class LocationEventDayView extends RelativeLayout {
     }
 
     public void init(Context context) {
-        rootView = inflate(context,
+        View rootView = inflate(context,
                 R.layout.layout_location_event_day_view,
                 this);
         headerView = rootView.findViewById(R.id.header);
