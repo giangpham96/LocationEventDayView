@@ -157,7 +157,7 @@ public class LocationEventDayView extends FrameLayout {
     private void putRecyclerViewInRecycles(Context context, List<ScheduleItem> scheduleItems, float weight) {
         RecyclerView recyclerView = new RecyclerView(context);
         LocationEventDayViewAdapter adapter =
-                new LocationEventDayViewAdapter(scheduleItems, slotLength);
+                new DefaultAdapter(scheduleItems, slotLength, R.layout.item_event);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager =
                 new LinearLayoutManager(context,

@@ -2,12 +2,9 @@ package leo.me.la.giang.locationeventdayview;
 
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -19,19 +16,21 @@ import static leo.me.la.giang.locationeventdayview.Constant.ScheduleItemTypes.UN
  * Created by giang on 2/16/18.
  */
 
-class LocationEventDayViewAdapter extends RecyclerView.Adapter<LocationEventDayViewAdapter.ViewHolder> {
+public abstract class LocationEventDayViewAdapter<T extends EventViewHolder> extends RecyclerView.Adapter<EventViewHolder> {
 
     private List<ScheduleItem> items;
     private long slotLength;
     private int slotWidth = (getScreenWidth() / 10 < 200) ? 200 : getScreenWidth() / 10;
+    private int slotViewId;
 
-    LocationEventDayViewAdapter(List<ScheduleItem> items, long slotLength) {
+    public LocationEventDayViewAdapter(List<ScheduleItem> items, long slotLength, int slotViewId) {
         this.items = items;
         this.slotLength = slotLength;
+        this.slotViewId = slotViewId;
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public final int getItemViewType(int position) {
         ScheduleItem item = items.get(position);
 
         if (item instanceof TimeIndicatorItem) {
@@ -44,34 +43,36 @@ class LocationEventDayViewAdapter extends RecyclerView.Adapter<LocationEventDayV
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int id;
         switch (viewType) {
             case TIME_INDICATOR:
                 id = R.layout.item_time_indicator;
                 break;
-            case EVENT:
-                id = R.layout.item_event;
-                break;
-            default:
+            case UNRESERVED:
                 id = R.layout.item_unreserved;
                 break;
+            default:
+                id = slotViewId;
+                return getViewHolder(LayoutInflater.from(parent.getContext())
+                        .inflate(id, parent, false));
         }
 
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(id, parent, false);
 
-        return new ViewHolder(itemView);
+        return new DefaultViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public final void onBindViewHolder(EventViewHolder holder, int position) {
         ScheduleItem item = items.get(position);
-        holder.bind(item, slotWidth, slotLength);
+        holder.resize(item, slotWidth, slotLength);
+        holder.bind(item);
     }
 
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return items.size();
     }
 
@@ -79,37 +80,17 @@ class LocationEventDayViewAdapter extends RecyclerView.Adapter<LocationEventDayV
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvEvent, tvOrganizer, tvTime;
-        ViewHolder(View itemView) {
-            super(itemView);
-            tvEvent = itemView.findViewById(R.id.tvEvent);
-            tvOrganizer = itemView.findViewById(R.id.tvOrganizer);
-            tvTime = itemView.findViewById(R.id.tvTime);
-        }
+    public abstract T getViewHolder(View itemView);
+}
 
-        void bind(ScheduleItem item, int slotWidth, long slotLength) {
+final class DefaultAdapter extends LocationEventDayViewAdapter<EventViewHolder> {
 
-            if (item instanceof TimeIndicatorItem) {
-                tvTime.setText(Utils.formatTime(item.getStartTime()));
-            }
-            if (item instanceof EventItem) {
-                tvEvent.setText(((EventItem) item).getTitle());
-                tvEvent.setSelected(true);
-                tvOrganizer.setText(((EventItem) item).getOrganizer());
-            }
+    DefaultAdapter(List<ScheduleItem> items, long slotLength, int slotViewId) {
+        super(items, slotLength, slotViewId);
+    }
 
-            resize(item, slotWidth, slotLength);
-        }
-
-        private void resize(ScheduleItem item, int slotWidth, long slotLength) {
-
-            int width = (int) ((float) slotWidth * (item.getEndTime() - item.getStartTime()) / slotLength);
-
-            ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
-            layoutParams.width = width;
-
-            itemView.setLayoutParams(layoutParams);
-        }
+    @Override
+    public EventViewHolder getViewHolder(View itemView) {
+        return new DefaultViewHolder(itemView);
     }
 }
