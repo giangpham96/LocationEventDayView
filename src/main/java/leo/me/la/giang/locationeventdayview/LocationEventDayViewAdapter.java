@@ -22,6 +22,7 @@ public abstract class LocationEventDayViewAdapter<T extends EventViewHolder> ext
     private long slotLength;
     private int slotWidth = (getScreenWidth() / 10 < 200) ? 200 : getScreenWidth() / 10;
     private int slotViewId;
+    private OnEventClickListener listener;
 
     public LocationEventDayViewAdapter(List<ScheduleItem> items, long slotLength, int slotViewId) {
         this.items = items;
@@ -66,9 +67,20 @@ public abstract class LocationEventDayViewAdapter<T extends EventViewHolder> ext
 
     @Override
     public final void onBindViewHolder(EventViewHolder holder, int position) {
-        ScheduleItem item = items.get(position);
+        final ScheduleItem item = items.get(position);
         holder.resize(item, slotWidth, slotLength);
         holder.bind(item);
+        if (item instanceof EventItem) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null)
+                        listener.onClick((EventItem) item);
+                }
+            });
+        } else {
+            holder.itemView.setOnClickListener(null);
+        }
     }
 
     @Override
@@ -81,6 +93,10 @@ public abstract class LocationEventDayViewAdapter<T extends EventViewHolder> ext
     }
 
     public abstract T getViewHolder(View itemView);
+
+    public void setItemClickListener(OnEventClickListener listener) {
+        this.listener = listener;
+    }
 }
 
 final class DefaultAdapter extends LocationEventDayViewAdapter<EventViewHolder> {
@@ -94,3 +110,4 @@ final class DefaultAdapter extends LocationEventDayViewAdapter<EventViewHolder> 
         return new DefaultViewHolder(itemView);
     }
 }
+

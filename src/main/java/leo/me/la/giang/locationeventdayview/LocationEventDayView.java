@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,6 +29,7 @@ public class LocationEventDayView extends FrameLayout {
     private List<RecyclerView> recyclerViews;
     private DateSchedule dateSchedule;
     private long slotLength = 30 * 60 * 1000;
+    private OnEventClickListener listener;
 
     public LocationEventDayView(Context context, DateSchedule dateSchedule, long slotLength) {
         super(context);
@@ -110,7 +110,6 @@ public class LocationEventDayView extends FrameLayout {
         }
     }
 
-
     private void putTextViewInHeader(Context context, String label, int color, float weight) {
         TextView textView = new TextView(context);
         textView.setText(label);
@@ -163,7 +162,8 @@ public class LocationEventDayView extends FrameLayout {
                 new LinearLayoutManager(context,
                         LinearLayoutManager.HORIZONTAL,
                         false);
-
+        if (listener != null)
+            adapter.setItemClickListener(listener);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         recyclers.addView(recyclerView);
@@ -198,5 +198,13 @@ public class LocationEventDayView extends FrameLayout {
         this.slotLength = slotLength;
         recyclers.removeAllViews();
         setupRecyclerViews(getContext());
+    }
+
+    public void setItemClickListener(OnEventClickListener listener) {
+        this.listener = listener;
+        for (RecyclerView rcv :
+                recyclerViews) {
+            ((LocationEventDayViewAdapter) rcv.getAdapter()).setItemClickListener(listener);
+        }
     }
 }
