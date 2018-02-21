@@ -1,17 +1,21 @@
 package leo.me.la.giang.locationeventdayview;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by giang on 2/16/18.
  */
 
-abstract class ScheduleItem {
-
+public class EventLocation {
     private long startTime;
     private long endTime;
+    private List<Location> locations;
 
-    ScheduleItem(long startTime, long endTime) {
+    public EventLocation(long startTime, long endTime, List<Location> locations) {
         this.startTime = (startTime / 60000) * 60000;
         this.endTime = (endTime / 60000) * 60000;
+        this.locations = locations;
     }
 
     public long getStartTime() {
@@ -29,16 +33,15 @@ abstract class ScheduleItem {
     public void setEndTime(long endTime) {
         this.endTime = (endTime / 60000) * 60000;
     }
-}
 
-class TimeIndicatorItem extends ScheduleItem {
-    public TimeIndicatorItem(long startTime, long endTime) {
-        super(startTime, endTime);
+    public List<Location> getLocations() {
+        if (locations == null) {
+            locations = new ArrayList<>();
+        }
+        return locations;
     }
-}
 
-class UnreservedItem extends ScheduleItem {
-    public UnreservedItem(long startTime, long endTime) {
-        super(startTime, endTime);
+    public void setLocations(List<Location> locations) {
+        this.locations = locations;
     }
 }

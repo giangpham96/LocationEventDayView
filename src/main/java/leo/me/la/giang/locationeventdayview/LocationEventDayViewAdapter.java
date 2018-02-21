@@ -18,13 +18,13 @@ import static leo.me.la.giang.locationeventdayview.Constant.ScheduleItemTypes.UN
 
 public abstract class LocationEventDayViewAdapter<T extends EventViewHolder> extends RecyclerView.Adapter<EventViewHolder> {
 
-    private List<ScheduleItem> items;
+    private List<Slot> items;
     private long slotLength;
     private int slotWidth = (getScreenWidth() / 10 < 200) ? 200 : getScreenWidth() / 10;
     private int slotViewId;
     private OnEventClickListener listener;
 
-    public LocationEventDayViewAdapter(List<ScheduleItem> items, long slotLength, int slotViewId) {
+    public LocationEventDayViewAdapter(List<Slot> items, long slotLength, int slotViewId) {
         this.items = items;
         this.slotLength = slotLength;
         this.slotViewId = slotViewId;
@@ -32,11 +32,11 @@ public abstract class LocationEventDayViewAdapter<T extends EventViewHolder> ext
 
     @Override
     public final int getItemViewType(int position) {
-        ScheduleItem item = items.get(position);
+        Slot item = items.get(position);
 
-        if (item instanceof TimeIndicatorItem) {
+        if (item instanceof TimeIndicator) {
             return TIME_INDICATOR;
-        } else if (item instanceof EventItem) {
+        } else if (item instanceof ReservedSlot) {
             return EVENT;
         } else {
             return UNRESERVED;
@@ -67,15 +67,15 @@ public abstract class LocationEventDayViewAdapter<T extends EventViewHolder> ext
 
     @Override
     public final void onBindViewHolder(EventViewHolder holder, int position) {
-        final ScheduleItem item = items.get(position);
+        final Slot item = items.get(position);
         holder.resize(item, slotWidth, slotLength);
         holder.bind(item);
-        if (item instanceof EventItem) {
+        if (item instanceof ReservedSlot) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (listener != null)
-                        listener.onClick((EventItem) item);
+                        listener.onClick((ReservedSlot) item);
                 }
             });
         } else {
@@ -101,7 +101,7 @@ public abstract class LocationEventDayViewAdapter<T extends EventViewHolder> ext
 
 final class DefaultAdapter extends LocationEventDayViewAdapter<EventViewHolder> {
 
-    DefaultAdapter(List<ScheduleItem> items, long slotLength, int slotViewId) {
+    DefaultAdapter(List<Slot> items, long slotLength, int slotViewId) {
         super(items, slotLength, slotViewId);
     }
 

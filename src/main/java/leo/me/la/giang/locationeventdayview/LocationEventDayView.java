@@ -27,20 +27,20 @@ public class LocationEventDayView extends FrameLayout {
     private LinearLayout headerView;
     private LinearLayout recyclers;
     private List<RecyclerView> recyclerViews;
-    private DateSchedule dateSchedule;
+    private EventLocation eventLocation;
     private long slotLength = 30 * 60 * 1000;
     private OnEventClickListener listener;
 
-    public LocationEventDayView(Context context, DateSchedule dateSchedule, long slotLength) {
+    public LocationEventDayView(Context context, EventLocation eventLocation, long slotLength) {
         super(context);
-        this.dateSchedule = dateSchedule;
+        this.eventLocation = eventLocation;
         this.slotLength = slotLength;
         init(context);
     }
 
-    public LocationEventDayView(Context context, DateSchedule dateSchedule) {
+    public LocationEventDayView(Context context, EventLocation eventLocation) {
         super(context);
-        this.dateSchedule = dateSchedule;
+        this.eventLocation = eventLocation;
         init(context);
     }
 
@@ -75,9 +75,9 @@ public class LocationEventDayView extends FrameLayout {
 
     private void setupHeader(Context context) {
         putTextViewInHeader(context, "", Color.WHITE, 0.3f);
-        for (LocationItem locationItem : dateSchedule.getLocationItems()) {
+        for (Location location : eventLocation.getLocations()) {
             putTextViewInHeader(context,
-                    locationItem.getLocation(),
+                    location.getLocation(),
                     getResources().getDrawable(R.drawable.bg_header),
                     1f);
         }
@@ -85,15 +85,15 @@ public class LocationEventDayView extends FrameLayout {
 
     private void setupRecyclerViews(Context context) {
         recyclerViews.clear();
-        List<ScheduleItem> timeIndicatorItems = new ArrayList<>();
-        long numberOfSlots = (long) Math.ceil((dateSchedule.getEndTime()
-                - dateSchedule.getStartTime()) / (float) slotLength);
-        long startTime = dateSchedule.getStartTime();
+        List<Slot> timeIndicatorItems = new ArrayList<>();
+        long numberOfSlots = (long) Math.ceil((eventLocation.getEndTime()
+                - eventLocation.getStartTime()) / (float) slotLength);
+        long startTime = eventLocation.getStartTime();
         for (int i = 0; i < numberOfSlots; i++) {
-            timeIndicatorItems.add(new TimeIndicatorItem(
+            timeIndicatorItems.add(new TimeIndicator(
                     startTime,
                     (i == numberOfSlots - 1)
-                            ? dateSchedule.getEndTime()
+                            ? eventLocation.getEndTime()
                             : startTime + slotLength
             ));
             startTime += slotLength;
@@ -101,11 +101,11 @@ public class LocationEventDayView extends FrameLayout {
 
         putRecyclerViewInRecycles(context, timeIndicatorItems, 0.3f);
 
-        for (LocationItem locationItem : dateSchedule.getLocationItems()) {
+        for (Location location : eventLocation.getLocations()) {
             putRecyclerViewInRecycles(context,
-                    Utils.addUnreservedItem(locationItem.getItems(),
-                            dateSchedule.getStartTime(),
-                            dateSchedule.getEndTime()),
+                    Utils.addUnreservedItem(location.getItems(),
+                            eventLocation.getStartTime(),
+                            eventLocation.getEndTime()),
                     1f);
         }
     }
@@ -153,10 +153,10 @@ public class LocationEventDayView extends FrameLayout {
         }
     };
 
-    private void putRecyclerViewInRecycles(Context context, List<ScheduleItem> scheduleItems, float weight) {
+    private void putRecyclerViewInRecycles(Context context, List<Slot> slots, float weight) {
         RecyclerView recyclerView = new RecyclerView(context);
         LocationEventDayViewAdapter adapter =
-                new DefaultAdapter(scheduleItems, slotLength, R.layout.item_event);
+                new DefaultAdapter(slots, slotLength, R.layout.item_event);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager =
                 new LinearLayoutManager(context,
@@ -178,12 +178,12 @@ public class LocationEventDayView extends FrameLayout {
                 0, weight);
     }
 
-    public DateSchedule getDateSchedule() {
-        return dateSchedule;
+    public EventLocation getEventLocation() {
+        return eventLocation;
     }
 
-    public void setDateSchedule(DateSchedule dateSchedule) {
-        this.dateSchedule = dateSchedule;
+    public void setEventLocation(EventLocation eventLocation) {
+        this.eventLocation = eventLocation;
         headerView.removeAllViews();
         recyclers.removeAllViews();
         setupHeader(getContext());

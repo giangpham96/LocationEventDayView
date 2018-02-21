@@ -4,16 +4,16 @@ package leo.me.la.giang.locationeventdayview;
  * Created by giang on 2/16/18.
  */
 
-public class EventItem extends ScheduleItem {
+public class ReservedSlot extends Slot {
 
     private String title;
     private String organizer;
 
-    public EventItem(long startTime, long endTime) {
+    public ReservedSlot(long startTime, long endTime) {
         super(startTime, endTime);
     }
 
-    public EventItem(long startTime, long endTime, String title, String organizer) {
+    public ReservedSlot(long startTime, long endTime, String title, String organizer) {
         super(startTime, endTime);
         this.title = title;
         this.organizer = organizer;

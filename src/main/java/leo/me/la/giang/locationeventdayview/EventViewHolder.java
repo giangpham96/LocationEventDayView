@@ -14,9 +14,9 @@ public abstract class EventViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
-    public abstract void bind(ScheduleItem item);
+    public abstract void bind(Slot item);
 
-    final void resize(ScheduleItem item, int slotWidth, long slotLength) {
+    final void resize(Slot item, int slotWidth, long slotLength) {
 
         int width = (int) ((float) slotWidth * (item.getEndTime() - item.getStartTime()) / slotLength);
 
@@ -34,17 +34,17 @@ final class DefaultViewHolder extends EventViewHolder {
     }
 
     @Override
-    public void bind(ScheduleItem item) {
+    public void bind(Slot item) {
         TextView tvEvent = itemView.findViewById(R.id.tvEvent);
         TextView tvOrganizer = itemView.findViewById(R.id.tvOrganizer);
         TextView tvTime = itemView.findViewById(R.id.tvTime);
-        if (item instanceof TimeIndicatorItem) {
+        if (item instanceof TimeIndicator) {
             tvTime.setText(Utils.formatTime(item.getStartTime()));
         }
-        if (item instanceof EventItem) {
-            tvEvent.setText(((EventItem) item).getTitle());
+        if (item instanceof ReservedSlot) {
+            tvEvent.setText(((ReservedSlot) item).getTitle());
             tvEvent.setSelected(true);
-            tvOrganizer.setText(((EventItem) item).getOrganizer());
+            tvOrganizer.setText(((ReservedSlot) item).getOrganizer());
         }
     }
 }

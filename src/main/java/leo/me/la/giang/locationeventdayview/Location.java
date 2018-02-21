@@ -7,12 +7,12 @@ import java.util.List;
  * Created by giang on 2/16/18.
  */
 
-public class LocationItem {
+public class Location {
 
     private String location;
-    private List<EventItem> items;
+    private List<ReservedSlot> items;
 
-    public LocationItem(String location, List<EventItem> items) {
+    public Location(String location, List<ReservedSlot> items) {
         this.location = location;
         this.items = items;
     }
@@ -25,13 +25,13 @@ public class LocationItem {
         this.location = location;
     }
 
-    public List<EventItem> getItems() {
+    public List<ReservedSlot> getItems() {
         if (items == null)
             return new ArrayList<>();
         return items;
     }
 
-    public void setItems(List<EventItem> items) {
+    public void setItems(List<ReservedSlot> items) {
         this.items = items;
     }
 }
