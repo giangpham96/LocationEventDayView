@@ -2,14 +2,14 @@
 
 A clone of the calendar view from [Dare to learn][1] mobile application
 
-##Demo behavior
+## Demo behavior
 ![Demo behavior][gif]
 
 [1]: https://play.google.com/store/apps/details?id=com.daretolearn
 [gif]: https://raw.githubusercontent.com/giangpham96/LocationEventDayView/master/repo_asset/demo_implementation.gif
 
-##Usage
-###Data source
+## Usage
+### Data source
 A <b>`ReservedSlot`</b> represents an interval of 
 time in which an event occurs
 <br><br>
@@ -23,7 +23,7 @@ An <b>`EventLocation`</b> contains a list of
 and `endTime` of the schedule
 <br><br>
 
-####Example
+#### Example
 ```java
 //create the schedule
 
@@ -76,7 +76,7 @@ For your convenience, you can subclass
 <b>`ReservedSlot`</b>, <b>`Location`</b>, and even <b>`EventLocation`</b> and add extra fields as long as it
 meets your desire.
 
-###View
+### View
 
 This view should not be added to xml file, add it
 to your activity or fragment programmatically instead
@@ -89,7 +89,7 @@ rootView.addView(locationEventDayView, MATCH_PARENT, MATCH_PARENT);
     ...
 ```
 
-###Slot Click Listener
+### Slot Click Listener
 ```java
     ...
 locationEventDayView.setItemClickListener(new OnEventClickListener() {
@@ -102,5 +102,5 @@ locationEventDayView.setItemClickListener(new OnEventClickListener() {
     ...
 ```
 
-##Conclusion
+## Conclusion
 Feel free to contribute to this repo
