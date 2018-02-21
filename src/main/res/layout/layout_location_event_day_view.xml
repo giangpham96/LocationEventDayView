@@ -11,10 +11,14 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:id="@+id/rcv"
-        android:layout_weight="85"
+    <HorizontalScrollView
         android:layout_width="0dp"
-        android:layout_height="match_parent"/>
+        android:layout_weight="85"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/rcv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+    </HorizontalScrollView>
 </LinearLayout>
