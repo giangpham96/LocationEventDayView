@@ -202,8 +202,7 @@ public class LocationEventDayView extends FrameLayout {
 
     public void setItemClickListener(OnEventClickListener listener) {
         this.listener = listener;
-        for (RecyclerView rcv :
-                recyclerViews) {
+        for (RecyclerView rcv : recyclerViews) {
             ((LocationEventDayViewAdapter) rcv.getAdapter()).setItemClickListener(listener);
         }
     }
