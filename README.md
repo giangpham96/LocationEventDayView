@@ -8,6 +8,20 @@ A clone of the calendar view from [Dare to learn][1] mobile application
 [1]: https://play.google.com/store/apps/details?id=com.daretolearn
 [gif]: https://raw.githubusercontent.com/giangpham96/LocationEventDayView/master/repo_asset/demo_implementation.gif
 
+## Installation
+Currently, this library is not on Maven or jcenter (it will be in the future). Therefore, you have to clone this
+repository and put it in the root of your project.
+<br><br>
+After that, simply add the module to the dependencies block inside build.gradle (application level):
+```
+dependencies {
+        ...
+        implementation project (':locationeventdayview')
+        ...
+}
+```
+That's all it takes to integrate this libarary to your project.
+
 ## Usage
 ### Data source
 A <b>`ReservedSlot`</b> represents an interval of 
